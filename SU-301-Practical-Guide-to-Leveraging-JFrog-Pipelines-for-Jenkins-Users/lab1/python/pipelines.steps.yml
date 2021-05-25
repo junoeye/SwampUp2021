@@ -26,14 +26,14 @@ pipelines:
                 ## remove the longest string matching "*/" starting from the left
                 sourceRepository: ${dockerRepo##*/}
           inputResources:
-            - name: lab10_src_code_webapp_python
+            - name: lab1_src_code_webapp_python
           outputResources:
             - name: lab1_bi_webapp_python
           integrations:
             - name: artifactory_eu
-          execution:
+        execution:
           onStart:
-            - jfrog --version 
+            - jfrog --version
             - cd ${res_lab1_src_code_webapp_python_resourcePath}/${trainingPath}/src/python && ls -l
             - git branch
             - jfrog config add --url=${int_artifactory_eu_url%/artifactory} --user="${int_artifactory_eu_user}" --apikey=${int_artifactory_eu_apikey} --interactive=false  art1 && jfrog config show
@@ -44,13 +44,13 @@ pipelines:
             - jfrog rt upload webapp_python.tar.gz ${genericRepo} --build-name ${res_lab1_bi_webapp_python_buildName} --build-number ${run_number}
             - jfrog rt bce ${res_lab1_bi_webapp_python_buildName} ${run_number}
             - jfrog rt bp  ${res_lab1_bi_webapp_python_buildName} ${run_number}
-          
+
       - name: lab1_scan_webapp_python
         type: XrayScan
         configuration:
           failOnScan: false
           inputResources:
-            - name: lab1_bi_webapp_anaconda
+            - name: lab1_bi_webapp_python
               trigger: true
 
       - name: lab1_promote_bi_webapp_python
@@ -67,4 +67,3 @@ pipelines:
             - name: lab1_bi_webapp_python
           outputResources:
             - name: lab1_bi_webapp_python_promoted
-
